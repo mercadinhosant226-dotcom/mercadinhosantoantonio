@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo - Mercadinho & Açougue Santo Antônio</title>
+<style>
+:root {
+  --vermelho: #d20707;
+  --vermelho2: #ff4719;
+  --laranja: #f0921a;
+  --creme: #faf7f2;
+  --cinza: #f0ece5;
+  --borda: #e0dbd2;
+  --texto: #1e1208;
+  --sub: #6b5e52;
+  --wpp: #25D366;
+  --danger: #e53935;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--creme);color:var(--texto);min-height:100vh}
+
+/* HEADER */
+header{background:var(--verde);color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.hdr{max-width:1100px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:12px;height:60px}
+.logo{font-size:1.25rem;font-weight:800;letter-spacing:-.5px;white-space:nowrap}
+.logo em{color:var(--laranja);font-style:normal}
+.busca-wrap{flex:1;position:relative}
+#busca{width:100%;padding:9px 16px 9px 40px;border:none;border-radius:50px;font-size:.95rem;background:rgba(255,255,255,.15);color:#fff;outline:none}
+#busca::placeholder{color:rgba(255,255,255,.6)}
+#busca:focus{background:rgba(255,255,255,.25)}
+.busca-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none}
+.sacola-btn{display:flex;align-items:center;gap:6px;background:var(--laranja);border:none;color:#fff;font-weight:700;font-size:.9rem;padding:8px 14px;border-radius:50px;cursor:pointer;white-space:nowrap;transition:opacity .15s}
+.sacola-btn:hover{opacity:.88}
+.badge{background:#fff;color:var(--laranja);border-radius:50%;min-width:20px;height:20px;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;justify-content:center;padding:0 3px}
+
+/* FILTROS */
+.filtros-bar{background:#fff;border-bottom:1px solid var(--borda);position:sticky;top:60px;z-index:90}
+.filtros-inner{max-width:1100px;margin:0 auto;padding:0 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;height:50px;align-items:center}
+.filtros-inner::-webkit-scrollbar{display:none}
+.cat-btn{border:1.5px solid var(--borda);background:#fff;color:var(--sub);font-size:.8rem;font-weight:600;padding:6px 14px;border-radius:50px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.cat-btn:hover,.cat-btn.on{background:var(--verde);border-color:var(--verde);color:#fff}
+
+/* CONTADOR */
+.contador{max-width:1100px;margin:14px auto 0;padding:0 16px;font-size:.82rem;color:var(--sub)}
+
+/* GRADE */
+.grade{max-width:1100px;margin:12px auto 0;padding:0 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+
+/* CARD */
+.card{background:#fff;border-radius:12px;border:1px solid var(--borda);overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s,transform .2s}
+.card:hover{box-shadow:0 4px 18px rgba(0,0,0,.1);transform:translateY(-2px)}
+.card-img{height:96px;background:var(--cinza);display:flex;align-items:center;justify-content:center;font-size:2.2rem}
+.card-body{padding:10px;flex:1;display:flex;flex-direction:column;gap:6px}
+.card-cat{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--verde2)}
+.card-nome{font-size:.82rem;font-weight:600;line-height:1.3;flex:1}
+.card-medida{font-size:.72rem;color:var(--sub)}
+.card-preco{font-size:1rem;font-weight:800;color:var(--verde)}
+
+/* SELECT TAMANHO */
+.tam-select{width:100%;padding:5px 8px;border:1.5px solid var(--borda);border-radius:6px;font-size:.78rem;cursor:pointer;outline:none;background:#fff}
+.tam-select:focus{border-color:var(--verde)}
+
+/* CONTROLES */
+.card-ctl{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+.add-btn{background:var(--verde);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.add-btn:hover{background:var(--verde2)}
+.qty-wrap{display:flex;align-items:center;gap:4px}
+.qty-wrap button{background:var(--cinza);border:none;border-radius:50%;width:26px;height:26px;font-size:1rem;font-weight:700;cursor:pointer;color:var(--verde);display:flex;align-items:center;justify-content:center}
+.qty-wrap button:hover{background:#ddd}
+.qty-n{font-weight:700;font-size:.9rem;min-width:18px;text-align:center}
+
+/* PAGINAÇÃO */
+.pag{max-width:1100px;margin:20px auto 100px;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.pag button{border:1.5px solid var(--borda);background:#fff;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--sub);transition:all .15s}
+.pag button:hover,.pag button.on{background:var(--verde);border-color:var(--verde);color:#fff}
+.pag button:disabled{opacity:.4;cursor:not-allowed}
+.pag-info{font-size:.82rem;color:var(--sub)}
+
+/* SACOLA OVERLAY */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;backdrop-filter:blur(2px)}
+.overlay.on{display:block}
+.painel{position:fixed;right:-100%;top:0;bottom:0;width:min(430px,100vw);background:#fff;z-index:300;display:flex;flex-direction:column;transition:right .3s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 30px rgba(0,0,0,.15)}
+.painel.on{right:0}
+.pan-hdr{background:var(--verde);color:#fff;padding:18px 16px;display:flex;align-items:center;justify-content:space-between}
+.pan-hdr h3{font-size:1.15rem;font-weight:800}
+.close-btn{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pan-itens{flex:1;overflow-y:auto;padding:14px}
+.pan-item{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--cinza)}
+.pan-item-info{flex:1}
+.pan-item-nome{font-size:.85rem;font-weight:600;line-height:1.3}
+.pan-item-det{font-size:.75rem;color:var(--sub);margin-top:2px}
+.pan-item-preco{font-size:.85rem;font-weight:700;color:var(--verde);margin-top:4px}
+.rm-btn{background:#fff0f0;border:none;color:var(--danger);border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:.8rem;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sacola-vazia{text-align:center;padding:60px 20px;color:#bbb}
+.sacola-vazia div{font-size:3rem;margin-bottom:12px}
+
+/* CHECKOUT */
+.checkout{padding:14px;border-top:2px solid var(--cinza);background:var(--creme)}
+.chk-titulo{font-weight:800;font-size:1rem;margin-bottom:12px;color:var(--texto)}
+.campo{margin-bottom:9px}
+.campo label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--sub);margin-bottom:3px}
+.campo input,.campo select,.campo textarea{width:100%;padding:9px 11px;border:1.5px solid var(--borda);border-radius:8px;font-size:.88rem;font-family:inherit;background:#fff;color:var(--texto);transition:border-color .15s}
+.campo input:focus,.campo select:focus,.campo textarea:focus{outline:none;border-color:var(--verde)}
+.total-linha{display:flex;justify-content:space-between;align-items:center;padding:10px 0;font-weight:800;font-size:1.05rem;color:var(--verde);border-top:1px solid var(--cinza);margin-top:4px}
+.wpp-btn{width:100%;background:var(--wpp);color:#fff;border:none;border-radius:12px;padding:13px;font-size:.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;transition:opacity .15s}
+.wpp-btn:hover{opacity:.88}
+.wpp-btn:disabled{background:#ccc;cursor:not-allowed}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--texto);color:#fff;padding:9px 20px;border-radius:50px;font-size:.88rem;font-weight:600;z-index:500;transition:transform .3s;pointer-events:none;white-space:nowrap}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+/* SEM RESULTADO */
+.sem-res{text-align:center;padding:60px 20px;color:var(--sub);grid-column:1/-1}
+.sem-res div{font-size:2.5rem;margin-bottom:10px}
+
+@media(max-width:500px){
+  .grade{grid-template-columns:repeat(2,1fr);gap:10px}
+  .logo{font-size:1rem}
+  .sacola-btn span:first-child{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <div class="logo">🛒 Mercado <em>do Bairro</em></div>
+    <div class="busca-wrap">
+      <span class="busca-ico">🔍</span>
+      <input id="busca" type="search" placeholder="Buscar produto..." autocomplete="off">
+    </div>
+    <button class="sacola-btn" onclick="abrirPainel()">
+      <span>🛍️ Sacola</span>
+      <span class="badge" id="badge">0</span>
+    </button>
+  </div>
+</header>
+
+<div class="filtros-bar">
+  <div class="filtros-inner" id="filtros"></div>
+</div>
+
+<div class="contador" id="contador"></div>
+<div class="grade" id="grade"></div>
+<div class="pag" id="pag"></div>
+
+<div class="overlay" id="overlay" onclick="fecharPainel()"></div>
+<div class="painel" id="painel">
+  <div class="pan-hdr">
+    <h3>🛍️ Minha Sacola</h3>
+    <button class="close-btn" onclick="fecharPainel()">✕</button>
+  </div>
+  <div class="pan-itens" id="pan-itens"></div>
+  <div class="checkout" id="checkout" style="display:none">
+    <div class="chk-titulo">📋 Dados do pedido</div>
+    <div class="campo"><label>Seu nome</label><input id="f-nome" placeholder="Ex: Maria Silva"></div>
+    <div class="campo"><label>WhatsApp</label><input id="f-tel" placeholder="(82) 99999-9999" type="tel"></div>
+    <div class="campo"><label>Endereço de entrega</label><input id="f-end" placeholder="Rua, número, bairro"></div>
+    <div class="campo"><label>Forma de pagamento</label>
+      <select id="f-pag">
+        <option value="">Selecione...</option>
+        <option>PIX</option><option>Dinheiro</option>
+        <option>Cartão de Débito</option><option>Cartão de Crédito</option>
+      </select>
+    </div>
+    <div class="campo"><label>Observações (opcional)</label><textarea id="f-obs" rows="2" placeholder="Alguma observação?"></textarea></div>
+    <div class="total-linha"><span>Total</span><span id="total-val">R$ 0,00</span></div>
+    <button class="wpp-btn" onclick="enviarWpp()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Enviar pedido pelo WhatsApp
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIGURAÇÃO — TROQUE O NÚMERO AQUI
+// ══════════════════════════════════════════
+const WPP_NUM = "5582920009023";
+const POR_PAG = 40;
+
+// ── EMOJIS POR CATEGORIA ──
+const CAT_EMOJI = {
+  'Bebidas':'🥤','Mercearia':'🛒','Biscoitos':'🍪','Limpeza':'🧹',
+  'Higiene':'🧴','Beleza':'💄','Bazar':'🏠','Doces':'🍬',
+  'Laticínios':'🧀','Calçados':'👟','Carnes e Frios':'🥩',
+  'Fraldas':'👶','Pet Shop':'🐾','Papelaria':'📄',
+  'Chás':'☕','Higiene Feminina':'🌸','Padaria':'🍞','Geral':'📦'
+};
+
+// ── EMOJIS PADRÃO POR CATEGORIA ──
+function emojiCat(cat) { return CAT_EMOJI[cat] || '📦'; }
+
+// ── ESTADO ──
+let todos = [];
+let filtrado = [];
+let catAtiva = 'Todas';
+let busca = '';
+let pagina = 1;
+let sacola = {}; // chave: "id|tamanho" → {prod, tam, qty}
+
+// ── CARREGAR DADOS ──
+fetch('dados.js')
+  .then(r => r.text())
+  .then(txt => {
+    eval(txt); // carrega PRODUTOS
+    todos = PRODUTOS;
+    init();
+  })
+  .catch(() => {
+    document.getElementById('grade').innerHTML = '<div class="sem-res"><div>⚠️</div><p>Erro ao carregar produtos.<br>Verifique se dados.js está na mesma pasta.</p></div>';
+  });
+
+function init() {
+  renderFiltros();
+  aplicarFiltro();
+}
+
+// ── FILTROS ──
+function renderFiltros() {
+  const cats = ['Todas', ...Object.keys(CAT_EMOJI).filter(c => todos.some(p => p.c === c))];
+  // Adicionar cats que existem mas não estão no mapa
+  const extras = [...new Set(todos.map(p => p.c))].filter(c => !cats.includes(c)).sort();
+  const todasCats = [...cats, ...extras];
+
+  document.getElementById('filtros').innerHTML = todasCats.map(c =>
+    `<button class="cat-btn ${c === catAtiva ? 'on' : ''}" onclick="filtrarCat('${c}')">${emojiCat(c)} ${c}</button>`
+  ).join('');
+}
+
+function filtrarCat(cat) {
+  catAtiva = cat;
+  pagina = 1;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('on', b.textContent.includes(cat) && cat !== 'Todas' || cat === 'Todas' && b.textContent.includes('Todas')));
+  aplicarFiltro();
+}
+
+// ── BUSCA ──
+let buscaTimer;
+document.getElementById('busca').addEventListener('input', e => {
+  clearTimeout(buscaTimer);
+  buscaTimer = setTimeout(() => {
+    busca = e.target.value.toLowerCase().trim();
+    pagina = 1;
+    aplicarFiltro();
+  }, 250);
+});
+
+function aplicarFiltro() {
+  filtrado = todos.filter(p => {
+    const catOk = catAtiva === 'Todas' || p.c === catAtiva;
+    const buscaOk = !busca || p.n.toLowerCase().includes(busca);
+    return catOk && buscaOk;
+  });
+  renderGrade();
+  renderPag();
+  document.getElementById('contador').textContent =
+    `${filtrado.length.toLocaleString('pt-BR')} produto${filtrado.length !== 1 ? 's' : ''} encontrado${filtrado.length !== 1 ? 's' : ''}`;
+}
+
+// ── GRADE ──
+function renderGrade() {
+  const inicio = (pagina - 1) * POR_PAG;
+  const pagina_itens = filtrado.slice(inicio, inicio + POR_PAG);
+
+  if (!pagina_itens.length) {
+    document.getElementById('grade').innerHTML = '<div class="sem-res"><div>🔍</div><p>Nenhum produto encontrado</p></div>';
+    return;
+  }
+
+  document.getElementById('grade').innerHTML = pagina_itens.map(p => cardHTML(p)).join('');
+  window.scrollTo({top: 110, behavior: 'smooth'});
+}
+
+function cardHTML(p) {
+  const tam = p.t === 'calcado' && p.s && p.s.length > 0;
+  const tamSelect = tam ? `<select class="tam-select" id="tam-${p.i}" onchange=""><option value="">Tamanho...</option>${p.s.map(t=>`<option>${t}</option>`).join('')}</select>` : '';
+  const chaveQty = p.t === 'calcado' ? null : `${p.i}`;
+  const qty = chaveQty ? (sacola[chaveQty]?.qty || 0) : 0;
+  const ctl = qty > 0
+    ? `<div class="qty-wrap"><button onclick="altQty('${p.i}','',${p.t === 'calcado' ? 1 : 0},-1)">−</button><span class="qty-n">${qty}</span><button onclick="altQty('${p.i}','',${p.t === 'calcado' ? 1 : 0},1)">+</button></div>`
+    : `<button class="add-btn" onclick="adicionar(${p.i},${p.t === 'calcado' ? 1 : 0})">+</button>`;
+
+  return `<div class="card" id="card-${p.i}">
+    <div class="card-img">${emojiCat(p.c)}</div>
+    <div class="card-body">
+      <div class="card-cat">${p.c}</div>
+      <div class="card-nome">${limparNome(p.n, p.t)}</div>
+      <div class="card-medida">${p.m || 'UN'}</div>
+      ${tamSelect}
+      <div class="card-ctl">
+        <div class="card-preco">R$ ${fmtPreco(p.p)}</div>
+        <div id="ctl-${p.i}">${ctl}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function limparNome(nome, tipo) {
+  if (tipo === 'calcado') return nome;
+  // Remover códigos numéricos do início
+  return nome.replace(/^\d{7,}\s*-\s*/,'').replace(/^\d{4,}\s+/,'').trim();
+}
+
+function fmtPreco(v) {
+  return v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+// ── ADICIONAR AO CARRINHO ──
+function adicionar(id, ehCalcado) {
+  const p = todos.find(x => x.i === id);
+  if (!p) return;
+
+  if (ehCalcado) {
+    const sel = document.getElementById(`tam-${id}`);
+    const tam = sel ? sel.value : '';
+    if (!tam) { mostrarToast('⚠️ Selecione um tamanho!'); return; }
+    const chave = `${id}|${tam}`;
+    if (!sacola[chave]) sacola[chave] = {p, tam, qty: 0};
+    sacola[chave].qty++;
+    mostrarToast(`✅ ${limparNome(p.n, p.t)} (${tam}) adicionado!`);
+  } else {
+    const chave = `${id}`;
+    if (!sacola[chave]) sacola[chave] = {p, tam:'', qty: 0};
+    sacola[chave].qty++;
+    mostrarToast(`✅ ${limparNome(p.n, p.t)} adicionado!`);
+    // Atualizar controle no card
+    document.getElementById(`ctl-${id}`).innerHTML =
+      `<div class="qty-wrap"><button onclick="altQty('${id}','',0,-1)">−</button><span class="qty-n">${sacola[chave].qty}</span><button onclick="altQty('${id}','',0,1)">+</button></div>`;
+  }
+  atualizarBadge();
+}
+
+function altQty(id, tam, ehCalcado, delta) {
+  const chave = tam ? `${id}|${tam}` : `${id}`;
+  if (!sacola[chave]) return;
+  sacola[chave].qty = Math.max(0, sacola[chave].qty + delta);
+  if (sacola[chave].qty === 0) {
+    delete sacola[chave];
+    if (!ehCalcado) {
+      document.getElementById(`ctl-${id}`).innerHTML =
+        `<button class="add-btn" onclick="adicionar(${id},0)">+</button>`;
+    }
+  } else if (!ehCalcado) {
+    document.getElementById(`ctl-${id}`).innerHTML =
+      `<div class="qty-wrap"><button onclick="altQty('${id}','',0,-1)">−</button><span class="qty-n">${sacola[chave].qty}</span><button onclick="altQty('${id}','',0,1)">+</button></div>`;
+  }
+  atualizarBadge();
+  if (document.getElementById('painel').classList.contains('on')) renderPainel();
+}
+
+function atualizarBadge() {
+  const total = Object.values(sacola).reduce((a,b) => a + b.qty, 0);
+  document.getElementById('badge').textContent = total;
+}
+
+// ── PAGINAÇÃO ──
+function renderPag() {
+  const total = filtrado.length;
+  const totalPag = Math.ceil(total / POR_PAG);
+  if (totalPag <= 1) { document.getElementById('pag').innerHTML = ''; return; }
+
+  let html = '';
+  html += `<button ${pagina===1?'disabled':''} onclick="irPag(${pagina-1})">‹ Ant</button>`;
+
+  let inicio = Math.max(1, pagina - 2);
+  let fim = Math.min(totalPag, pagina + 2);
+  if (inicio > 1) html += `<button onclick="irPag(1)">1</button>${inicio > 2 ? '<span>…</span>' : ''}`;
+  for (let i = inicio; i <= fim; i++) {
+    html += `<button class="${i===pagina?'on':''}" onclick="irPag(${i})">${i}</button>`;
+  }
+  if (fim < totalPag) html += `${fim < totalPag-1 ? '<span>…</span>' : ''}<button onclick="irPag(${totalPag})">${totalPag}</button>`;
+  html += `<button ${pagina===totalPag?'disabled':''} onclick="irPag(${pagina+1})">Próx ›</button>`;
+  html += `<span class="pag-info">Página ${pagina} de ${totalPag}</span>`;
+
+  document.getElementById('pag').innerHTML = html;
+}
+
+function irPag(p) {
+  pagina = p;
+  renderGrade();
+  renderPag();
+}
+
+// ── PAINEL DA SACOLA ──
+function abrirPainel() {
+  document.getElementById('painel').classList.add('on');
+  document.getElementById('overlay').classList.add('on');
+  renderPainel();
+}
+function fecharPainel() {
+  document.getElementById('painel').classList.remove('on');
+  document.getElementById('overlay').classList.remove('on');
+}
+function renderPainel() {
+  const itens = Object.entries(sacola);
+  const panItens = document.getElementById('pan-itens');
+  const checkout = document.getElementById('checkout');
+
+  if (!itens.length) {
+    panItens.innerHTML = '<div class="sacola-vazia"><div>🛒</div><p>Sua sacola está vazia</p></div>';
+    checkout.style.display = 'none';
+    return;
+  }
+
+  let total = 0;
+  panItens.innerHTML = itens.map(([chave, {p, tam, qty}]) => {
+    const sub = p.p * qty;
+    total += sub;
+    const nomeExibido = limparNome(p.n, p.t);
+    const detalhe = tam ? `Tamanho: ${tam} · ` : '';
+    return `<div class="pan-item">
+      <div style="font-size:1.8rem">${emojiCat(p.c)}</div>
+      <div class="pan-item-info">
+        <div class="pan-item-nome">${nomeExibido}</div>
+        <div class="pan-item-det">${detalhe}${qty}x · R$ ${fmtPreco(p.p)}</div>
+        <div class="pan-item-preco">R$ ${fmtPreco(sub)}</div>
+      </div>
+      <button class="rm-btn" onclick="remover('${chave}')">✕</button>
+    </div>`;
+  }).join('');
+
+  document.getElementById('total-val').textContent = `R$ ${fmtPreco(total)}`;
+  checkout.style.display = 'block';
+}
+
+function remover(chave) {
+  delete sacola[chave];
+  atualizarBadge();
+  renderPainel();
+  renderGrade(); // atualiza controles visíveis
+}
+
+// ── ENVIAR WHATSAPP ──
+function enviarWpp() {
+  const nome = document.getElementById('f-nome').value.trim();
+  const tel  = document.getElementById('f-tel').value.trim();
+  const end  = document.getElementById('f-end').value.trim();
+  const pag  = document.getElementById('f-pag').value;
+  const obs  = document.getElementById('f-obs').value.trim();
+
+  if (!nome || !tel || !end || !pag) {
+    mostrarToast('⚠️ Preencha todos os campos obrigatórios!');
+    return;
+  }
+
+  let total = 0;
+  const linhas = Object.values(sacola).map(({p, tam, qty}) => {
+    const sub = p.p * qty;
+    total += sub;
+    const nomeExib = limparNome(p.n, p.t);
+    const tamText = tam ? ` (Tam: ${tam})` : '';
+    return `• ${nomeExib}${tamText} — ${qty}x R$ ${fmtPreco(p.p)} = R$ ${fmtPreco(sub)}`;
+  }).join('\n');
+
+  const msg = `🛒 *PEDIDO - Mercado do Bairro*\n\n`
+    + `👤 *Nome:* ${nome}\n`
+    + `📱 *WhatsApp:* ${tel}\n`
+    + `📍 *Endereço:* ${end}\n`
+    + `💳 *Pagamento:* ${pag}\n\n`
+    + `📦 *Itens:*\n${linhas}\n\n`
+    + `💰 *TOTAL: R$ ${fmtPreco(total)}*`
+    + (obs ? `\n\n📝 *Obs:* ${obs}` : '');
+
+  window.open(`https://wa.me/${WPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// ── TOAST ──
+let toastTimer;
+function mostrarToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 2200);
+}
+</script>
+</body>
+</html>
